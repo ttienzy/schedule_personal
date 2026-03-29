@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, memo, useCallback } from 'react';
+import { DAYS } from '../constants/schedule';
 import type { Database } from '../lib/database.types';
 
 type Slot = Database['public']['Tables']['slots']['Row'];
@@ -14,18 +15,11 @@ interface WeekGridProps {
     isOwner?: boolean;
 }
 
-const DAYS = [
-    { value: 1, label: 'T2', fullLabel: 'Thứ 2', weekend: false },
-    { value: 2, label: 'T3', fullLabel: 'Thứ 3', weekend: false },
-    { value: 3, label: 'T4', fullLabel: 'Thứ 4', weekend: false },
-    { value: 4, label: 'T5', fullLabel: 'Thứ 5', weekend: false },
-    { value: 5, label: 'T6', fullLabel: 'Thứ 6', weekend: false },
-    { value: 6, label: 'T7', fullLabel: 'Thứ 7', weekend: true },
-    { value: 7, label: 'CN', fullLabel: 'Chủ nhật', weekend: true },
-];
-
-export function WeekGrid({ slots, categories, conflicts, onSlotClick, onBulkAddClick, isOwner = true }: WeekGridProps) {
-    const getCategoryById = (id: string) => categories.find(c => c.id === id);
+export const WeekGrid = memo(function WeekGrid({ slots, categories, conflicts, onSlotClick, onBulkAddClick, isOwner = true }: WeekGridProps) {
+    const getCategoryById = useCallback((id: string) =>
+        categories.find(c => c.id === id),
+        [categories]
+    );
 
     // Group slots by day and sort by time
     const slotsByDay = useMemo(() => {
@@ -296,4 +290,4 @@ export function WeekGrid({ slots, categories, conflicts, onSlotClick, onBulkAddC
             </style>
         </>
     );
-}
+});

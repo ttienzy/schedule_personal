@@ -25,3 +25,5 @@ export { SkeletonLoader } from './SkeletonLoader';
 export { EmptyState } from './EmptyState';
 export { SidebarLayout } from './SidebarLayout';
 export { ThemeToggle } from './ThemeToggle';
+
+export { NotificationSettings } from './NotificationSettings';

@@ -30,6 +30,7 @@ export function exportScheduleToJSON(
             time_start: s.time_start,
             time_end: s.time_end,
             label: s.label,
+            notified_at: s.notified_at,
         })),
         rules: rules.map(r => ({
             order: r.order,

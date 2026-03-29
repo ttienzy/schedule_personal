@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CategorySelect } from './CategorySelect';
+import { DEFAULT_TIME_START, DEFAULT_TIME_END, DEFAULT_INITIAL_DAY } from '../constants/schedule';
 import type { Database } from '../lib/database.types';
 
 type Slot = Database['public']['Tables']['slots']['Row'];
@@ -29,9 +30,9 @@ export function SlotModal({
     initialDay,
     initialTime,
 }: SlotModalProps) {
-    const [day, setDay] = useState(initialDay || 1);
-    const [timeStart, setTimeStart] = useState(initialTime || '06:30');
-    const [timeEnd, setTimeEnd] = useState('07:30');
+    const [day, setDay] = useState(initialDay || DEFAULT_INITIAL_DAY);
+    const [timeStart, setTimeStart] = useState(initialTime || DEFAULT_TIME_START);
+    const [timeEnd, setTimeEnd] = useState(DEFAULT_TIME_END);
     const [categoryId, setCategoryId] = useState('');
     const [label, setLabel] = useState('');
     const [saving, setSaving] = useState(false);
@@ -45,9 +46,9 @@ export function SlotModal({
             setCategoryId(slot.category_id);
             setLabel(slot.label);
         } else {
-            setDay(initialDay || 1);
-            setTimeStart(initialTime || '06:30');
-            setTimeEnd('07:30');
+            setDay(initialDay || DEFAULT_INITIAL_DAY);
+            setTimeStart(initialTime || DEFAULT_TIME_START);
+            setTimeEnd(DEFAULT_TIME_END);
             setCategoryId(categories[0]?.id || '');
             setLabel('');
         }
@@ -67,7 +68,7 @@ export function SlotModal({
 
     if (!isOpen) return null;
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         // Validate time
@@ -92,9 +93,9 @@ export function SlotModal({
         } finally {
             setSaving(false);
         }
-    };
+    }, [timeStart, timeEnd, onSave, scheduleId, categoryId, day, label, onClose]);
 
-    const handleDelete = async () => {
+    const handleDelete = useCallback(async () => {
         if (!slot || !onDelete) return;
         if (!confirm('Xóa slot này?')) return;
 
@@ -107,7 +108,7 @@ export function SlotModal({
         } finally {
             setSaving(false);
         }
-    };
+    }, [slot, onDelete, onClose]);
 
     return (
         <div

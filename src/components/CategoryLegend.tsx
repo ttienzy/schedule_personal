@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { CategoryBadge } from './CategoryBadge';
 import type { Database } from '../lib/database.types';
 
@@ -9,11 +9,15 @@ interface CategoryLegendProps {
     initialShowCount?: number;
 }
 
-export function CategoryLegend({ categories, initialShowCount = 5 }: CategoryLegendProps) {
+export const CategoryLegend = memo(function CategoryLegend({ categories, initialShowCount = 5 }: CategoryLegendProps) {
     const [showAll, setShowAll] = useState(false);
 
     const displayCategories = showAll ? categories : categories.slice(0, initialShowCount);
     const hasMore = categories.length > initialShowCount;
+
+    const toggleShowAll = useCallback(() => {
+        setShowAll(prev => !prev);
+    }, []);
 
     return (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '1rem', alignItems: 'center' }}>
@@ -23,7 +27,7 @@ export function CategoryLegend({ categories, initialShowCount = 5 }: CategoryLeg
 
             {hasMore && (
                 <button
-                    onClick={() => setShowAll(!showAll)}
+                    onClick={toggleShowAll}
                     style={{
                         padding: '4px 10px',
                         fontSize: '11px',
@@ -39,4 +43,4 @@ export function CategoryLegend({ categories, initialShowCount = 5 }: CategoryLeg
             )}
         </div>
     );
-}
+});

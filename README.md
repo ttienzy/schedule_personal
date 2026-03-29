@@ -8,6 +8,10 @@
   - Tự động tạo time slots dựa trên các slots thực tế
   - Khoảng cách 30 phút giữa các time slots
   - Hỗ trợ mọi khung giờ (00:00 - 23:59)
+- **Push Notifications** 🔔 - Nhận thông báo nhắc nhở trước khi hoạt động bắt đầu
+  - Thông báo tự động 1-2 phút trước giờ bắt đầu
+  - Hoạt động ngay cả khi đóng app
+  - Quản lý subscription dễ dàng
 - **Drag & Drop** - Kéo thả slots để di chuyển hoặc hoán đổi
 - **Bulk Add Slots** - Thêm nhiều slots cùng lúc cho nhiều ngày với validation tự động
 - **Pagination & Search** - Tìm kiếm và phân trang lịch trình (5 schedules/trang, fetch tối đa 10)
@@ -215,7 +219,10 @@ Tạo file `.env` trong thư mục `schedule-app/`:
 ```env
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_VAPID_PUBLIC_KEY=your-vapid-public-key
 ```
+
+**Lưu ý**: Để bật Push Notifications, xem hướng dẫn chi tiết trong file `PUSH_NOTIFICATION_DEPLOYMENT.md`
 
 ### 5. Run Development Server
 
@@ -240,6 +247,18 @@ Sau khi deploy, người dùng có thể:
 - Mobile: "Add to Home Screen" từ browser menu
 
 ## Features Guide
+
+### Push Notifications 🔔
+
+- Nhận thông báo tự động trước 1-2 phút khi hoạt động sắp bắt đầu
+- Hoạt động ngay cả khi đóng app (nhờ Service Worker)
+- Quản lý trong phần "Thông báo nhắc nhở" ở sidebar
+- Yêu cầu:
+  - Browser hỗ trợ Push API (Chrome, Firefox, Edge, Safari 16+)
+  - Cấp quyền thông báo cho website
+  - HTTPS (hoặc localhost để test)
+
+**Setup**: Xem file `PUSH_NOTIFICATION_DEPLOYMENT.md` để cấu hình server-side
 
 ### Dynamic Week Grid
 

@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useSlots, useRules, useCategories } from '../hooks';
 import {
-    WeekGrid, SlotModal, BulkAddSlotsModal, BulkAddSlotsByDayModal, RulesBox, CategoryLegend, CategoryLegendCollapsible,
-    SharePanel, ExportPanel, ScheduleListWithPagination, SidebarLayout, EmptyState, ThemeToggle
+    WeekGrid, SlotModal, BulkAddSlotsModal, BulkAddSlotsByDayModal, RulesBox, CategoryLegendCollapsible,
+    SharePanel, ExportPanel, ScheduleListWithPagination, SidebarLayout, EmptyState, ThemeToggle, NotificationSettings
 } from '../components';
 import { findConflicts } from '../utils/timeUtils';
+import { DEFAULT_TIME_START, DEFAULT_INITIAL_DAY } from '../constants/schedule';
 import type { ScheduleExport } from '../utils/exportUtils';
 import type { Database } from '../lib/database.types';
 
@@ -74,57 +75,58 @@ export function ScheduleView({
 
     const conflicts = useMemo(() => findConflicts(slots), [slots]);
 
-    const handleSlotClick = (slot: Slot) => {
+    // Memoize callbacks to prevent unnecessary re-renders
+    const handleSlotClick = useCallback((slot: Slot) => {
         if (!isOwner) return;
         setSelectedSlot(slot);
         setModalInitialDay(undefined);
         setModalInitialTime(undefined);
         setModalOpen(true);
-    };
+    }, [isOwner]);
 
-    const handleEmptyClick = (day: number, timeSlot: string) => {
+    const handleEmptyClick = useCallback((day: number, timeSlot: string) => {
         if (!isOwner) return;
         setSelectedSlot(null);
         setModalInitialDay(day);
         setModalInitialTime(timeSlot);
         setModalOpen(true);
-    };
+    }, [isOwner]);
 
-    const handleBulkAddClick = (day: number, dayLabel: string) => {
+    const handleBulkAddClick = useCallback((day: number, dayLabel: string) => {
         if (!isOwner) return;
         setSelectedDay(day);
         setSelectedDayLabel(dayLabel);
         setBulkByDayModalOpen(true);
-    };
+    }, [isOwner]);
 
-    const handleSaveSlot = async (data: Database['public']['Tables']['slots']['Insert']) => {
+    const handleSaveSlot = useCallback(async (data: Database['public']['Tables']['slots']['Insert']) => {
         if (selectedSlot) {
             await updateSlot(selectedSlot.id, data);
         } else {
             await createSlot(data);
         }
-    };
+    }, [selectedSlot, updateSlot, createSlot]);
 
-    const handleBulkSaveSlots = async (slots: SlotInsert[]) => {
+    const handleBulkSaveSlots = useCallback(async (slots: SlotInsert[]) => {
         // Create all slots sequentially
         for (const slot of slots) {
             await createSlot(slot);
         }
-    };
+    }, [createSlot]);
 
-    const handleAddRule = async (content: string) => {
+    const handleAddRule = useCallback(async (content: string) => {
         await createRule({
             schedule_id: schedule.id,
             content,
             order: rules.length,
         });
-    };
+    }, [createRule, schedule.id, rules.length]);
 
-    const handleUpdateRule = async (id: string, content: string) => {
+    const handleUpdateRule = useCallback(async (id: string, content: string) => {
         await updateRule(id, { content });
-    };
+    }, [updateRule]);
 
-    const handleImport = async (data: ScheduleExport) => {
+    const handleImport = useCallback(async (data: ScheduleExport) => {
         for (const slot of data.slots) {
             await createSlot({
                 schedule_id: schedule.id,
@@ -137,7 +139,7 @@ export function ScheduleView({
                 ...rule,
             });
         }
-    };
+    }, [createSlot, createRule, schedule.id]);
 
     return (
         <div style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', background: 'var(--bg-primary)', minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
@@ -266,6 +268,9 @@ export function ScheduleView({
                 rightSidebar={
                     isOwner ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            {/* Notification Settings */}
+                            <NotificationSettings userId={schedule.owner_id} />
+
                             {/* Rules Box */}
                             <RulesBox
                                 rules={rules}
@@ -340,8 +345,8 @@ export function ScheduleView({
                             action={isOwner ? {
                                 label: '+ Thêm slot',
                                 onClick: () => {
-                                    setModalInitialDay(1);
-                                    setModalInitialTime('06:30');
+                                    setModalInitialDay(DEFAULT_INITIAL_DAY);
+                                    setModalInitialTime(DEFAULT_TIME_START);
                                     setModalOpen(true);
                                 }
                             } : undefined}

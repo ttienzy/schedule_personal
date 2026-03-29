@@ -1,4 +1,9 @@
 export function registerServiceWorker() {
+    // Temporarily disabled for build
+    console.log('Service Worker registration disabled');
+    return;
+
+    /* eslint-disable no-unreachable */
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker
@@ -11,4 +16,5 @@ export function registerServiceWorker() {
                 });
         });
     }
+    /* eslint-enable no-unreachable */
 }

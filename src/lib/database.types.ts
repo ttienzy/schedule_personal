@@ -78,6 +78,7 @@ export interface Database {
                     time_start: string
                     time_end: string
                     label: string
+                    notified_at: string | null
                     created_at: string
                 }
                 Insert: {
@@ -88,6 +89,7 @@ export interface Database {
                     time_start: string
                     time_end: string
                     label: string
+                    notified_at?: string | null
                     created_at?: string
                 }
                 Update: {
@@ -98,6 +100,7 @@ export interface Database {
                     time_start?: string
                     time_end?: string
                     label?: string
+                    notified_at?: string | null
                     created_at?: string
                 }
                 Relationships: []
@@ -122,6 +125,33 @@ export interface Database {
                     schedule_id?: string
                     order?: number
                     content?: string
+                    created_at?: string
+                }
+                Relationships: []
+            }
+            push_subscriptions: {
+                Row: {
+                    id: string
+                    owner_id: string
+                    endpoint: string
+                    p256dh: string
+                    auth_key: string
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    owner_id: string
+                    endpoint: string
+                    p256dh: string
+                    auth_key: string
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    owner_id?: string
+                    endpoint?: string
+                    p256dh?: string
+                    auth_key?: string
                     created_at?: string
                 }
                 Relationships: []
