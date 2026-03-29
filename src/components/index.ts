@@ -2,6 +2,7 @@ export { WeekGrid } from './WeekGrid';
 export { SlotCard } from './SlotCard';
 export { CategoryBadge } from './CategoryBadge';
 export { CategoryLegend } from './CategoryLegend';
+export { CategoryLegendCollapsible } from './CategoryLegendCollapsible';
 export { SlotModal } from './SlotModal';
 export { BulkAddSlotsModal } from './BulkAddSlotsModal';
 export { BulkAddSlotsByDayModal } from './BulkAddSlotsByDayModal';

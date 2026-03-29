@@ -76,3 +76,111 @@ input:focus, select:focus, textarea:focus {
 [data-theme="dark"] textarea:focus {
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
 }
+
+
+/* Mobile Responsive Improvements */
+@media (max-width: 768px) {
+  .schedule-header {
+    padding: 0.75rem !important;
+  }
+  
+  .week-switcher {
+    width: 100%;
+    justify-content: space-between !important;
+  }
+  
+  .week-label {
+    min-width: auto !important;
+    font-size: 12px !important;
+  }
+  
+  .signout-btn {
+    padding: 0.4rem 0.75rem !important;
+    font-size: 11px !important;
+  }
+  
+  /* Make buttons touch-friendly but not too large */
+  button {
+    min-height: 40px;
+  }
+  
+  /* Action buttons on mobile - moderate size */
+  .action-buttons {
+    justify-content: stretch !important;
+  }
+  
+  .action-buttons button {
+    flex: 1;
+    width: 100%;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+  }
+  
+
+}
+
+@media (max-width: 480px) {
+  .schedule-header {
+    padding: 0.5rem !important;
+  }
+  
+  .week-switcher {
+    padding: 0.4rem 0.75rem !important;
+    gap: 0.5rem !important;
+    border-radius: 8px !important;
+  }
+  
+  .week-label {
+    font-size: 11px !important;
+  }
+  
+  /* Ensure full width, no container restrictions */
+  body {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Touch-friendly but refined */
+  button {
+    min-height: 42px;
+    border-radius: 8px !important;
+  }
+  
+  /* Action buttons refined on mobile */
+  .action-buttons {
+    margin-bottom: 1rem !important;
+  }
+  
+  .action-buttons button {
+    padding: 11px 18px !important;
+    font-size: 14px !important;
+    border-radius: 10px !important;
+  }
+  
+  /* Softer corners everywhere */
+  input, select, textarea {
+    border-radius: 8px !important;
+  }
+}
+
+/* Ensure full width on mobile */
+html, body, #root {
+  width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Remove any max-width constraints on mobile */
+@media (max-width: 768px) {
+  * {
+    max-width: 100% !important;
+  }
+  
+  /* Except for modals */
+  [role="dialog"],
+  .modal-container {
+    max-width: 90vw !important;
+  }
+}

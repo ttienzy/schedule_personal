@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useSlots, useRules, useCategories } from '../hooks';
 import {
-    WeekGrid, SlotModal, BulkAddSlotsModal, BulkAddSlotsByDayModal, RulesBox, CategoryLegend,
+    WeekGrid, SlotModal, BulkAddSlotsModal, BulkAddSlotsByDayModal, RulesBox, CategoryLegend, CategoryLegendCollapsible,
     SharePanel, ExportPanel, ScheduleListWithPagination, SidebarLayout, EmptyState, ThemeToggle
 } from '../components';
 import { findConflicts } from '../utils/timeUtils';
@@ -140,7 +140,7 @@ export function ScheduleView({
     };
 
     return (
-        <div style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', background: 'var(--bg-primary)', minHeight: '100vh' }}>
+        <div style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', background: 'var(--bg-primary)', minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
             {/* Header */}
             <div style={{
                 background: 'var(--bg-card)',
@@ -149,11 +149,13 @@ export function ScheduleView({
                 position: 'sticky',
                 top: 0,
                 zIndex: 100,
-            }}>
-                <div style={{ maxWidth: '1600px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                        <div>
-                            <h1 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '0.25rem', color: 'var(--text-primary)' }}>
+            }}
+                className="schedule-header"
+            >
+                <div style={{ maxWidth: '1600px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap', flex: '1 1 auto' }}>
+                        <div style={{ minWidth: '0' }}>
+                            <h1 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '0.25rem', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {schedule.title}
                             </h1>
                             <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
@@ -171,7 +173,9 @@ export function ScheduleView({
                                 background: 'var(--bg-hover)',
                                 borderRadius: '8px',
                                 border: '1px solid var(--border-light)',
-                            }}>
+                            }}
+                                className="week-switcher"
+                            >
                                 <button
                                     onClick={onPrevWeek}
                                     style={{
@@ -185,7 +189,9 @@ export function ScheduleView({
                                 >
                                     ←
                                 </button>
-                                <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)', minWidth: '180px', textAlign: 'center' }}>
+                                <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)', minWidth: '180px', textAlign: 'center' }}
+                                    className="week-label"
+                                >
                                     {schedule.week_label || `${schedule.date_from} → ${schedule.date_to}`}
                                 </span>
                                 <button
@@ -217,7 +223,9 @@ export function ScheduleView({
                                     borderRadius: '6px',
                                     cursor: 'pointer',
                                     color: 'var(--text-primary)',
+                                    whiteSpace: 'nowrap',
                                 }}
+                                className="signout-btn"
                             >
                                 Đăng xuất
                             </button>
@@ -250,18 +258,8 @@ export function ScheduleView({
                                 />
                             )}
 
-                            {/* Category Legend */}
-                            <div style={{
-                                background: 'var(--bg-card)',
-                                padding: '1rem',
-                                borderRadius: '8px',
-                                border: '1px solid var(--border-light)',
-                            }}>
-                                <h3 style={{ fontSize: '13px', fontWeight: 500, marginBottom: '0.75rem', color: 'var(--text-primary)' }}>
-                                    Danh mục
-                                </h3>
-                                <CategoryLegend categories={categories} initialShowCount={8} />
-                            </div>
+                            {/* Category Legend - Desktop only */}
+                            <CategoryLegendCollapsible categories={categories} initialShowCount={8} />
                         </div>
                     ) : undefined
                 }
@@ -294,27 +292,39 @@ export function ScheduleView({
             >
                 {/* Main Content - Week Grid */}
                 <div>
-                    {!isOwner && <CategoryLegend categories={categories} initialShowCount={5} />}
 
                     {/* Action Buttons */}
                     {isOwner && (
-                        <div style={{
-                            display: 'flex',
-                            gap: '0.5rem',
-                            marginBottom: '1rem',
-                            justifyContent: 'flex-end',
-                        }}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                gap: '0.5rem',
+                                marginBottom: '1rem',
+                                justifyContent: 'flex-end',
+                            }}
+                            className="action-buttons"
+                        >
                             <button
                                 onClick={() => setBulkModalOpen(true)}
                                 style={{
-                                    padding: '8px 16px',
-                                    fontSize: '12px',
+                                    padding: '10px 18px',
+                                    fontSize: '13px',
                                     background: 'var(--accent-color)',
                                     color: '#fff',
                                     border: 'none',
-                                    borderRadius: '6px',
+                                    borderRadius: '8px',
                                     cursor: 'pointer',
-                                    fontWeight: 500,
+                                    fontWeight: 600,
+                                    boxShadow: '0 2px 6px rgba(253, 126, 20, 0.25)',
+                                    transition: 'all 0.2s',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-1px)';
+                                    e.currentTarget.style.boxShadow = '0 4px 10px rgba(253, 126, 20, 0.35)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(253, 126, 20, 0.25)';
                                 }}
                             >
                                 Thêm theo nhiều ngày

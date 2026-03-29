@@ -255,6 +255,27 @@ export function WeekGrid({ slots, categories, conflicts, onSlotClick, onBulkAddC
                                         );
                                     })
                                 )}
+
+                                {/* Add Slots Button for Mobile */}
+                                {isOwner && onBulkAddClick && (
+                                    <button
+                                        onClick={() => onBulkAddClick(day.value, day.fullLabel)}
+                                        style={{
+                                            width: '100%',
+                                            marginTop: '0.5rem',
+                                            padding: '10px',
+                                            fontSize: '13px',
+                                            background: 'transparent',
+                                            color: 'var(--text-secondary)',
+                                            border: '1px dashed var(--border-color)',
+                                            borderRadius: '6px',
+                                            cursor: 'pointer',
+                                            fontWeight: 500,
+                                        }}
+                                    >
+                                        Thêm vào {day.fullLabel}
+                                    </button>
+                                )}
                             </div>
                         </div>
                     );
