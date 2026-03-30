@@ -65,23 +65,50 @@ export function useSchedules(options: UseSchedulesOptions = {}) {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error('Not authenticated');
 
-        // Kiểm tra trùng lặp tuần
-        const { data: existingSchedules, error: checkError } = await supabase
+        // Fetch TẤT CẢ schedules của user này để check overlap
+        const { data: userSchedules, error: checkError } = await supabase
             .from('schedules')
-            .select('id, date_from, date_to, week_label')
-            .eq('owner_id', user.id)
-            .or(`date_from.lte.${schedule.date_to},date_to.gte.${schedule.date_from}`);
+            .select('id, date_from, date_to, week_label, owner_id')
+            .eq('owner_id', user.id);
 
-        if (checkError) throw checkError;
+        if (checkError) {
+            console.error('Check error:', checkError);
+            throw checkError;
+        }
 
-        if (existingSchedules && existingSchedules.length > 0) {
-            const conflictSchedule = existingSchedules[0];
-            const conflictLabel = conflictSchedule.week_label || `${conflictSchedule.date_from} → ${conflictSchedule.date_to}`;
-            throw new Error(
-                `Tuần này đã tồn tại!\n\n` +
-                `Lịch trình "${conflictLabel}" đã bao gồm khoảng thời gian từ ${schedule.date_from} đến ${schedule.date_to}.\n\n` +
-                `Vui lòng chọn khoảng thời gian khác hoặc chỉnh sửa lịch trình hiện có.`
-            );
+        console.log('Checking overlap for user:', user.id);
+        console.log('New schedule:', schedule.date_from, 'to', schedule.date_to);
+        console.log('User schedules:', userSchedules?.length || 0);
+
+        // Check overlap ở client-side
+        if (userSchedules && userSchedules.length > 0) {
+            const newFrom = new Date(schedule.date_from + 'T00:00:00');
+            const newTo = new Date(schedule.date_to + 'T23:59:59');
+
+            const conflictSchedule = userSchedules.find(existing => {
+                const existingFrom = new Date(existing.date_from + 'T00:00:00');
+                const existingTo = new Date(existing.date_to + 'T23:59:59');
+
+                console.log('Comparing:');
+                console.log('  New:', newFrom.toISOString(), 'to', newTo.toISOString());
+                console.log('  Existing:', existingFrom.toISOString(), 'to', existingTo.toISOString());
+
+                // Check if date ranges overlap
+                // Two ranges overlap if: start1 <= end2 AND start2 <= end1
+                const overlaps = newFrom <= existingTo && existingFrom <= newTo;
+                console.log('  Overlaps?', overlaps);
+
+                return overlaps;
+            });
+
+            if (conflictSchedule) {
+                const conflictLabel = conflictSchedule.week_label || `${conflictSchedule.date_from} → ${conflictSchedule.date_to}`;
+                throw new Error(
+                    `Tuần này đã tồn tại!\n\n` +
+                    `Lịch trình "${conflictLabel}" đã bao gồm khoảng thời gian từ ${schedule.date_from} đến ${schedule.date_to}.\n\n` +
+                    `Vui lòng chọn khoảng thời gian khác hoặc chỉnh sửa lịch trình hiện có.`
+                );
+            }
         }
 
         const { data, error } = await supabase

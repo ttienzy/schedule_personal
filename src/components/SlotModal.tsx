@@ -66,8 +66,7 @@ export function SlotModal({
         }
     }, [timeStart, timeEnd]);
 
-    if (!isOpen) return null;
-
+    // Memoize handlers - MUST be before early return
     const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -109,6 +108,8 @@ export function SlotModal({
             setSaving(false);
         }
     }, [slot, onDelete, onClose]);
+
+    if (!isOpen) return null;
 
     return (
         <div
